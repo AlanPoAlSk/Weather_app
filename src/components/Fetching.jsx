@@ -38,7 +38,7 @@ const WeatherApp = () => {
             {weatherData && (
                 <div>
                     <h2>Current Weather in {weatherData.name}</h2>
-                    <p>{weatherData.weather[0].icon && (
+                    <p style={{backgroundColor : '#B0C4DE'}}>{weatherData.weather[0].icon && (
                                         <img src={`https://openweathermap.org/img/w/${weatherData.weather[0].icon}.png`} alt="Weather Icon" />
                                     )}</p>
                     <table>
