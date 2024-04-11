@@ -1,124 +1,29 @@
-// import axios from "axios";
-// import { useState } from "react"
-// import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
-
-// const WeatherApp = () => {
-//     const [city, setCity] = useState('');
-//     const [weatherData, setWeatherData] = useState(null);
-//     const[error, setError] = useState(null);
-//     const apiKey = import.meta.env.VITE_API_KEY;
-
-//     const handleSearch = async () => {
-//         try {
-//             console.log(`https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}`);
-//             const response = await axios.get(`https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}`);
-//             console.log(response.data);
-//             setWeatherData(response.data);
-//             setError(null);
-//         } catch (error) {
-//             console.error('Error fetching weather data:', error);
-//             setWeatherData(null);
-//             setError('City not found');
-//         }
-//     };
-
-//     return (
-//         <div>
-//             <h1>Weather App</h1>
-//             <div>
-//                 <input 
-//                     type="text"
-//                     value={city}
-//                     onChange={(e) => setCity(e.target.value)}
-//                     placeholder="Enter city name"
-//                 />
-//                 <button onClick={handleSearch}>Search</button>
-//             </div>
-//             {error && <p>{error}</p>}
-//             {weatherData && (
-//                 <div>
-//                     <h2>Current Weather in {weatherData.name}</h2>
-//                     <p style={{backgroundColor : '#B0C4DE'}}>{weatherData.weather[0].icon && (
-//                                         <img src={`https://openweathermap.org/img/w/${weatherData.weather[0].icon}.png`} alt="Weather Icon" />
-//                                     )}</p>
-//                     <table>
-//                         <tbody>
-//                             <tr>
-//                                 <td>Temperature:</td>
-//                                 <td>{(weatherData.main.temp - 273.15).toFixed(0)} °C</td>
-//                             </tr>
-//                             <tr>
-//                                 <td>Feels Like:</td>
-//                                 <td>{(weatherData.main.feels_like - 273.15).toFixed(0)} °C</td>
-//                             </tr>
-//                             <tr>
-//                                 <td>Humidity:</td>
-//                                 <td>{weatherData.main.humidity}%</td>
-//                             </tr>
-//                             <tr>
-//                                 <td>Pressure:</td>
-//                                 <td>{weatherData.main.pressure} hPa</td>
-//                             </tr>
-//                             <tr>
-//                                 <td>Weather:</td>
-//                                 <td>{weatherData.weather[0].description}</td>
-//                             </tr>
-                            
-//                         </tbody>
-//                     </table>
-//                 </div>
-//             )}
-//         </div>
-//     );
-// };
-
-// export default WeatherApp;
-
 import axios from "axios";
 import { useState } from "react";
-import { useEffect } from "react"; // Import useEffect
-// import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 
 const WeatherApp = () => {
     const [city, setCity] = useState('');
+    const [country, setCountry] = useState('');
     const [weatherData, setWeatherData] = useState(null);
-    const [forecastData, setForecastData] = useState(null); // State for forecast data
+    const [forecastData, setForecastData] = useState(null);
     const [error, setError] = useState(null);
-    const [showWeather, setShowWeather] = useState(false);
     const [showForecast, setShowForecast] = useState(false);
     const apiKey = import.meta.env.VITE_API_KEY;
 
-    useEffect(() => {
-        if (showForecast && city && apiKey) {
-            // Fetch forecast data when city or apiKey changes and showForecast is true
-            const fetchForecastData = async () => {
-                try {
-                    const response = await axios.get(`https://api.openweathermap.org/data/2.5/forecast?q=${city}&appid=${apiKey}`);
-                    setForecastData(response.data);
-                    setError(null);
-                } catch (error) {
-                    console.error('Error fetching forecast data:', error);
-                    setForecastData(null);
-                    setError('Forecast not available');
-                }
-            };
-            fetchForecastData();
-        }
-    }, [showForecast, city, apiKey]);
-
     const handleSearch = async () => {
         try {
-            const response = await axios.get(`https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}`);
-            setWeatherData(response.data);
-            setShowWeather(true);
+            const weatherResponse = await axios.get(`https://api.openweathermap.org/data/2.5/weather?q=${city},${country}&appid=${apiKey}`);
+            setWeatherData(weatherResponse.data);
             setError(null);
+
+            const forecastResponse = await axios.get(`https://api.openweathermap.org/data/2.5/forecast?q=${city},${country}&appid=${apiKey}`);
+            setForecastData(forecastResponse.data);
+            setShowForecast(true);
         } catch (error) {
-            console.error('Error fetching weather data:', error);
-            setWeatherData(null);
+            console.error('Error fetching data:', error);
             setError('City not found');
-            setShowWeather(false);
+            setShowForecast(false);
         }
-        setShowForecast(true); // Always show forecast section when search button is clicked
     };
 
     const processForecastData = () => {
@@ -157,7 +62,6 @@ const WeatherApp = () => {
     };
 
     return (
-        // <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh', flexDirection: 'column' }}>
         <div>
             <h1>Weather App</h1>
             <div>
@@ -167,19 +71,25 @@ const WeatherApp = () => {
                     onChange={(e) => setCity(e.target.value)}
                     placeholder="Enter city name"
                 />
+                <input
+                    type="text"
+                    value={country}
+                    onChange={(e) => setCountry(e.target.value)}
+                    placeholder="Enter country code"
+                />
                 <button onClick={handleSearch}>Search</button>
             </div>
             {error && <p>{error}</p>}
-            {showWeather && weatherData && (
+            {showForecast && weatherData && (
                 <div style={{ textAlign: 'center' }}>
                     <h2>Current Weather in {weatherData.name}</h2>
                     <p style={{ backgroundColor: '#B0C4DE', width: '200px', marginLeft: '42%'}}>{weatherData.weather[0].icon && (
                         <img 
                         src={`https://openweathermap.org/img/w/${weatherData.weather[0].icon}.png`} 
                         alt="Weather Icon" 
-                        style={{ width: '100px', height: '100px' }} // Adjust the width and height as needed
-                    />
-                    )}</p>
+                        style={{ width: '100px', height: '100px' }}
+                        />
+                        )}</p>
                     <table style={{ margin: 'auto' }}>
                         <tbody>
                             <tr>
