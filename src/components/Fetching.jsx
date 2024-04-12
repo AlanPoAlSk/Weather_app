@@ -68,9 +68,9 @@ const WeatherApp = () => {
     };
 
     return (
-        <div>
+        <div style={pageStyle}>
             <h1>Weather App</h1>
-            <div style={pageStyle}>
+            <div>
                 <input
                     type="text"
                     value={city}
