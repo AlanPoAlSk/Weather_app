@@ -61,10 +61,16 @@ const WeatherApp = () => {
         }
     };
 
+    const pageStyle = {
+        backgroundColor: '#f2f2f2', 
+        minHeight: '100vh', 
+        padding: '20px'
+    };
+
     return (
         <div>
             <h1>Weather App</h1>
-            <div>
+            <div style={pageStyle}>
                 <input
                     type="text"
                     value={city}
